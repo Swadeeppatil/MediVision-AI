@@ -1,0 +1,23 @@
+# Fracture Detection Model Configuration
+# Copy to .env or set environment variables
+
+# Model Selection
+# Set to "true" to use custom trained model, "false" for original DenseNet169
+USE_CUSTOM_MODEL: false
+
+# Custom Model Path (relative to project root)
+CUSTOM_MODEL_PATH: "models/efficientnet_b4_fracture_classifier.onnx"
+
+# Inference Settings
+INFERENCE_PROVIDER: "cpu"  # cpu or cuda
+BATCH_SIZE: 1
+
+# Training Settings (for run_pipeline.py)
+TRAIN_EPOCHS: 50
+TRAIN_BATCH_SIZE: 16
+TRAIN_LR: 0.0001
+TRAIN_IMG_SIZE: 224
+TRAIN_MODEL_NAME: "efficientnet_b4"
+
+# Dataset
+DATA_DIR: "data/fracture_classification"

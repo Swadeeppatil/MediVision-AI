@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Model files
+*.h5
+*.pth
+*.pt
+*.onnx
+models/
+lightning_logs/
+
+# Data
+data/
+*.npy
+
+# Logs
+*.log
+
+# Test outputs
+test_report.pdf
+test_master_report.pdf
+
+# Environment
+.env
+.env.local

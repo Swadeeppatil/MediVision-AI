@@ -1,0 +1,175 @@
+Create a professional Entity-Relationship Diagram (ERD) for "MediVision AI Medical Diagnostic System". Use standard Chen/Crow's Foot notation. Medical blue/white theme (#1e3a5f, #3b82f6, #ffffff, #f1f5f9).
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           ENTITIES & RELATIONSHIPS                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+ENTITY 1: PATIENT (Strong Entity)
+┌────────────────────────────────────────┐
+│              PATIENT                   │
+├────────────────────────────────────────┤
+│ 🔑 patient_id        PK, INT, AI       │
+│ 👤 full_name         VARCHAR(100)      │
+│ 📅 date_of_birth     DATE              │
+│ ⚥ gender             ENUM(M,F,O)       │
+│ 📞 phone             VARCHAR(20)       │
+│ 📧 email             VARCHAR(100)      │
+│ 🏠 address           TEXT              │
+│ 🩸 blood_type        ENUM(A+,A-,B+,...)│
+│ 📋 medical_history   TEXT              │
+│ 🕐 created_at        TIMESTAMP         │
+│ 🕐 updated_at        TIMESTAMP         │
+└────────────────────────────────────────┘
+
+ENTITY 2: SCAN_SESSION (Strong Entity)
+┌────────────────────────────────────────┐
+│            SCAN_SESSION                │
+├────────────────────────────────────────┤
+│ 🔑 session_id        PK, INT, AI       │
+│ 🔗 patient_id        FK → PATIENT      │
+│ 📅 scan_date         DATETIME          │
+│ 🏷️ scan_type         ENUM(XRAY,MRI,CT) │
+│ 📍 body_region       VARCHAR(50)       │
+│ 🏥 facility_name     VARCHAR(100)      │
+│ 👨‍⚕️ referring_dr      VARCHAR(100)      │
+│ 📝 clinical_notes    TEXT              │
+│ 🕐 created_at        TIMESTAMP         │
+└────────────────────────────────────────┘
+
+ENTITY 3: FRACTURE_SCAN (Weak/Child Entity - Core Audit Table)
+┌────────────────────────────────────────┐
+│           FRACTURE_SCAN                │
+├────────────────────────────────────────┤
+│ 🔑 scan_id           PK, INT, AI       │
+│ 🔗 session_id        FK → SCAN_SESSION │
+│ 🏷️ fracture_type     VARCHAR(50)       │
+│ 📊 confidence        DECIMAL(5,2)      │
+│ ⚠️ severity          ENUM(Mild,Mod,    │
+│                      Severe,Emergency) │
+│ 📂 original_path     VARCHAR(500)      │
+│ 📂 enhanced_path     VARCHAR(500)      │
+│ 📂 thermal_path      VARCHAR(500)      │
+│ 📂 highlighted_path  VARCHAR(500)      │
+│ 🤖 model_version     VARCHAR(50)       │
+│ 🕐 inference_time_ms INT               │
+│ 🕐 created_at        TIMESTAMP         │
+└────────────────────────────────────────┘
+
+ENTITY 4: REPORT_ANALYSIS (Strong Entity)
+┌────────────────────────────────────────┐
+│         REPORT_ANALYSIS                │
+├────────────────────────────────────────┤
+│ 🔑 report_id         PK, INT, AI       │
+│ 🔗 session_id        FK → SCAN_SESSION │
+│ 📂 source_file_path  VARCHAR(500)      │
+│ 📝 extracted_text    LONGTEXT          │
+│ 🤖 ai_summary        LONGTEXT          │
+│ 🔍 key_findings      JSON              │
+│ ⚠️ health_warnings    JSON              │
+│ 🩺 recommendations   JSON              │
+│ 🔑 api_provider      ENUM(Gemini,Local)│
+│ 🕐 processing_time_ms INT              │
+│ 🕐 created_at        TIMESTAMP         │
+└────────────────────────────────────────┘
+
+ENTITY 5: SYMPTOM_CONSULTATION (Strong Entity)
+┌────────────────────────────────────────┐
+│      SYMPTOM_CONSULTATION              │
+├────────────────────────────────────────┤
+│ 🔑 consult_id        PK, INT, AI       │
+│ 🔗 patient_id        FK → PATIENT      │
+│ 📝 symptom_query     TEXT              │
+│ 🏷️ matched_condition VARCHAR(50)       │
+│ 💊 suggested_meds    JSON              │
+│ 📋 dosage_info       JSON              │
+│ ⚠️ precautions       TEXT              │
+│ 👨‍⚕️ specialist_rec    VARCHAR(100)      │
+│ 🌐 fda_results       JSON              │
+│ 🕐 created_at        TIMESTAMP         │
+└────────────────────────────────────────┘
+
+ENTITY 6: MODEL_METADATA (Lookup/Reference Entity)
+┌────────────────────────────────────────┐
+│           MODEL_METADATA               │
+├────────────────────────────────────────┤
+│ 🔑 model_id          PK, VARCHAR(50)   │
+│ 🏷️ model_name        VARCHAR(100)      │
+│ 🏗️ architecture      VARCHAR(50)       │
+│ 📊 input_shape       VARCHAR(20)       │
+│ 🎯 num_classes       INT               │
+│ 🏷️ class_labels      JSON              │
+│ 📈 train_accuracy    DECIMAL(5,2)      │
+│ 📈 val_accuracy      DECIMAL(5,2)      │
+│ 🕐 deployed_at       TIMESTAMP         │
+│ ✅ is_active         BOOLEAN           │
+└────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              RELATIONSHIPS                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PATIENT (1) ──────< (M) SCAN_SESSION
+  │ "undergoes"
+  ▼
+  A patient can have multiple scan sessions over time
+
+SCAN_SESSION (1) ──────< (M) FRACTURE_SCAN
+  │ "produces"
+  ▼
+  One session (one imaging event) can produce multiple fracture analyses
+  (e.g., different views, different models, re-analysis)
+
+SCAN_SESSION (1) ──────< (1) REPORT_ANALYSIS
+  │ "generates"
+  ▼
+  One session may have zero or one AI report analysis
+  (optional - only if report uploaded)
+
+PATIENT (1) ──────< (M) SYMPTOM_CONSULTATION
+  │ "requests"
+  ▼
+  Patient can request multiple symptom consultations
+
+FRACTURE_SCAN (M) ──────> (1) MODEL_METADATA
+  │ "uses"
+  ▼
+  Each fracture scan references the model version used
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           VISUAL SPECIFICATIONS                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+NOTATION: Crow's Foot (preferred) or Chen
+- Entities: Rounded rectangles, blue header (#1e3a5f), white body
+- PK: Yellow key icon 🔑 before attribute
+- FK: Blue link icon 🔗 before attribute
+- Relationships: Solid lines with crow's foot (three prongs) for "many"
+- Relationship labels: Diamond or text on line, verb phrase
+- Cardinality: 1 and M (or 0..N) markers at ends
+
+LAYOUT: Top-down hierarchical
+          PATIENT
+         /    |    \
+        /     |     \
+       ▼      ▼      ▼
+  SCAN_SESSION  SYMPTOM_CONSULTATION
+      |
+      |──< FRACTURE_SCAN >── MODEL_METADATA
+      |
+      └──< REPORT_ANALYSIS
+
+COLOR CODING:
+- Patient/People entities: Blue theme (#1e3a5f)
+- Clinical/Scan entities: Green theme (#059669)
+- AI/Processing entities: Purple theme (#7c3aed)
+- Reference/Lookup entities: Gray theme (#475569)
+
+ADDITIONAL ELEMENTS:
+- Title: "MediVision AI - Entity Relationship Diagram"
+- Subtitle: "Normalized Clinical Data Model v2.0"
+- Legend box: PK, FK, 1:M, 1:1, Weak Entity
+- Note callout: "FRACTURE_SCAN stores immutable audit trail per analysis"
+- Note callout: "MODEL_METADATA enables model versioning & reproducibility"
+- Footer: "Designed for SQLite/PostgreSQL • MediVision AI v1.0"
+
+OUTPUT: High-resolution vector (SVG/PNG 1920x1080+), clean white background, crisp lines, suitable for technical presentation
