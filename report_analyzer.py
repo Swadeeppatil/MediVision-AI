@@ -74,11 +74,14 @@ class MedicalReportAnalyzer:
         # If Gemini API Key is provided, use Gemini via Google AI REST endpoint
         if self.api_key:
             try:
-                return self._call_gemini_api(extracted_text, custom_notes, file_path)
+                summary = self._call_gemini_api(extracted_text, custom_notes, file_path)
+                return summary, extracted_text
             except Exception as e:
-                return f"Gemini API Error: {str(e)}\n\nFallback Analysis:\n" + self._local_fallback_analysis(extracted_text, custom_notes)
+                fallback = self._local_fallback_analysis(extracted_text, custom_notes)
+                return f"Gemini API Error: {str(e)}\n\nFallback Analysis:\n" + fallback, extracted_text
         else:
-            return self._local_fallback_analysis(extracted_text, custom_notes)
+            fallback = self._local_fallback_analysis(extracted_text, custom_notes)
+            return fallback, extracted_text
 
     def _call_gemini_api(self, extracted_text, custom_notes, file_path):
         prompt = (
