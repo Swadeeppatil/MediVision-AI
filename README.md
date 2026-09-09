@@ -421,18 +421,6 @@ MIT License - See LICENSE file for details.
 
 > **This software is for diagnostic assistance only and does not constitute medical advice. All AI-generated findings must be verified by qualified medical professionals. The developers assume no liability for clinical decisions based on this software.**
 
----
-
-## 🙏 Acknowledgments
-
-- **DenseNet169**: Huang et al. (CVPR 2017)
-- **MURA Dataset**: Stanford ML Group
-- **TensorFlow/Keras**: Google Brain Team
-- **PyTorch Lightning**: William Falcon et al.
-- **fpdf2**: PyFPDF contributors
-- **PyMuPDF**: Artifex Software
-- **Gemini API**: Google AI
-
----
+--
 
 **Made with ❤️ for Medical AI Research**
